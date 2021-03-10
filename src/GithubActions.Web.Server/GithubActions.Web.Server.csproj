@@ -23,4 +23,10 @@
   <ItemGroup>
     <ProjectReference Include="..\GithubActions.Contract\GithubActions.Contract.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="GithubActions.Web.Server.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
