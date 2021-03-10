@@ -29,6 +29,11 @@ namespace GithubActions.Web.Server.v1.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Get the weather for a city (Only London & Paris are supported)
+        /// </summary>
+        /// <param name="city"></param>
+        /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(WeatherForecastResponse), (int)HttpStatusCode.OK)]

@@ -24,7 +24,7 @@ namespace GithubActions.Web.Server.StartupCsExtensions.SwaggerCustomization
                     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
                     // ... and tell Swagger to use those XML comments.
-                    options.IncludeXmlComments(xmlPath);
+                    //options.IncludeXmlComments(xmlPath);
 
                     options.DocumentFilter<FillDefaultValueForApiVersionInSwaggerUi>();
                     //options.DocumentFilter<AddCallingSystemHeaderToDocument>();
