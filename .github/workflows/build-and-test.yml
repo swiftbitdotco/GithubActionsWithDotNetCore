@@ -1,5 +1,7 @@
 name: .NET
 
+# todo:https://www.aaron-powell.com/posts/2020-01-10-deploying-azure-functions-with-github-actions/
+
 env:
   OUTPUT_PATH: ${{ github.workspace }}/.output
   TEST_OUTPUT_PATH: ${{ github.workspace }}/.testoutput
@@ -37,12 +39,45 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: SonarCloud Scan
+      # --- vvv SonarQube Stuff vvv---
+
+      - name: Cache SonarCloud packages
         if: env.USE_SONARQUBE == 1
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: actions/cache@v1
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarCloud scanner
+        if: env.USE_SONARQUBE == 1
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+      - name: Build and analyze
+        if: env.USE_SONARQUBE == 1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithDotNetCore" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build --no-restore --configuration release
+          dotnet test --collect:"Code Coverage" --logger:"trx;LogFileName=${{ env.TEST_OUTPUT_PATH }}/TestResults.xml"
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+      # --- ^^^ SonarQube Stuff ^^^ ---
 
       - name: Build
         if: env.USE_SONARQUBE == 0
