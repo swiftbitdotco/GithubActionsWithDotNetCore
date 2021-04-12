@@ -77,7 +77,7 @@ jobs:
         run: |
           dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithDotNetCore" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --no-restore --configuration release
-          dotnet test --collect:"Code Coverage" --logger:"trx;LogFileName=${{ env.TEST_OUTPUT_PATH }}/TestResults.xml"
+          dotnet test --collect:"Code Coverage" --logger:"trx"
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       # --- ^^^ SonarQube Stuff ^^^ ---
