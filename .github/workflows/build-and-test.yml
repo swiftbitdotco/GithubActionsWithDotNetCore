@@ -37,6 +37,9 @@ jobs:
         with:
           java-version: 11
 
+      - name: Clean
+        run: dotnet clean --configuration Release && dotnet nuget locals all --clear
+
       # - name: Restore
       #   run: dotnet restore -s https://api.nuget.org/
 
