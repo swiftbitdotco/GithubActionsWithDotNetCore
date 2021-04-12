@@ -4,7 +4,7 @@ env:
   OUTPUT_PATH: ${{ github.workspace }}/.output
   TEST_OUTPUT_PATH: ${{ github.workspace }}/.testoutput
   DOTNET_VERSION: 5.0.x
-  USE_SONARQUBE: 0
+  USE_SONARQUBE: 1
 
 on:
   push:
