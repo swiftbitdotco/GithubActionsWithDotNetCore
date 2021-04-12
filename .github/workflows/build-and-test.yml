@@ -37,8 +37,8 @@ jobs:
         with:
           java-version: 11
 
-      - name: Restore
-        run: dotnet restore -s https://api.nuget.org/
+      # - name: Restore
+      #   run: dotnet restore -s https://api.nuget.org/
 
       # --- vvv SonarQube Stuff vvv---
 
