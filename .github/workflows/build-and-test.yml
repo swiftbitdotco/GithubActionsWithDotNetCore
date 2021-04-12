@@ -66,8 +66,7 @@ jobs:
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          mkdir .\.sonar\scanner
-          dotnet tool install dotnet-sonarscanner --tool-path .\.sonar\scanner
+          dotnet tool install dotnet-sonarscanner -g
 
       - name: Build and analyze
         if: env.USE_SONARQUBE == 1
@@ -76,10 +75,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: bash
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithDotNetCore" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithDotNetCore" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --no-restore --configuration release
           dotnet test --collect:"Code Coverage" --logger:"trx;LogFileName=${{ env.TEST_OUTPUT_PATH }}/TestResults.xml"
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       # --- ^^^ SonarQube Stuff ^^^ ---
 
