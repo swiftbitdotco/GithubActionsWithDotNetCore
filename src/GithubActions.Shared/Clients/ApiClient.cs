@@ -14,7 +14,7 @@ namespace GithubActions.Shared.Clients
 
     public class ApiClient : IApiClient
     {
-        public static string Name = "API";
+        public const string Name = "API";
         private readonly ISimpleLogger _logger;
         private readonly ICustomHttpClient _client;
 
@@ -34,6 +34,7 @@ namespace GithubActions.Shared.Clients
         {
             var uri = Urls.WeatherForecast.Get(city);
             var httpResponse = await _client.GetAsync(uri);
+            _logger.Info($"Response from HTTP GET '{uri}': '{httpResponse.StatusCode}'");
             return await httpResponse.GetContentAsAsync<WeatherForecastResponse>();
         }
     }

@@ -16,10 +16,10 @@ namespace GithubActions.Shared.Extensions
                 throw new HttpResponseMessageExtensionsException("Content Type header should exist in response");
             }
 
-            return await httpResponseMessage.DeserializeToObjectAsync<T>(contentType);
+            return await httpResponseMessage.DeserializeToObjectAsync<T>();
         }
 
-        private static async Task<T> DeserializeToObjectAsync<T>(this HttpResponseMessage httpResponseMessage, string contentType) where T : class
+        private static async Task<T> DeserializeToObjectAsync<T>(this HttpResponseMessage httpResponseMessage) where T : class
         {
             var contentString = await httpResponseMessage.Content.ReadAsStringAsync();
 

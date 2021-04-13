@@ -22,7 +22,7 @@ namespace GithubActions.Tests.Fixtures
             // Register the NUnit logger
             builder.ConfigureLogging(loggingBuilder =>
             {
-                loggingBuilder.Services.AddSingleton<ILoggerProvider>(serviceProvider => new XUnitLoggerProvider(_testOutputHelper));
+                loggingBuilder.Services.AddSingleton<ILoggerProvider>(new XUnitLoggerProvider(_testOutputHelper));
             });
         }
 

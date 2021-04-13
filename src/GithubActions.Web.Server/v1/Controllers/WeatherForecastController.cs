@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using GithubActions.Contract.v1;
 using GithubActions.Web.Server.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -37,10 +36,12 @@ namespace GithubActions.Web.Server.v1.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(WeatherForecastResponse), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<WeatherForecast>>> Get(string city)
+        public ActionResult<IEnumerable<WeatherForecast>> Get(string city)
         {
+            _logger.LogInformation($"--> {nameof(Get)}");
             if (string.IsNullOrWhiteSpace(city))
             {
+                _logger.LogInformation($"<-- {nameof(Get)} (HTTP 400)");
                 return BadRequest(new ErrorResponse
                 {
                     Message = $"City '{city}' is null/whitespace"
@@ -48,6 +49,7 @@ namespace GithubActions.Web.Server.v1.Controllers
             }
             if (!Cities.Contains(city.ToLower()))
             {
+                _logger.LogInformation($"<-- {nameof(Get)} (HTTP 404)");
                 return NotFound(new ErrorResponse
                 {
                     Message = $"City '{city}' not found"
@@ -63,6 +65,7 @@ namespace GithubActions.Web.Server.v1.Controllers
             })
             .ToArray();
 
+            _logger.LogInformation($"<-- {nameof(Get)} (HTTP 200)");
             return Ok(new WeatherForecastResponse
             {
                 City = city,

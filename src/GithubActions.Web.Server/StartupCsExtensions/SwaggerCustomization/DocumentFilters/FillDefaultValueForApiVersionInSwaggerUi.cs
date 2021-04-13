@@ -21,7 +21,7 @@ namespace GithubActions.Web.Server.StartupCsExtensions.SwaggerCustomization.Docu
             }
         }
 
-        private void TryAddVersionParamTo(OpenApiOperation operation, string version)
+        private static void TryAddVersionParamTo(OpenApiOperation operation, string version)
         {
             var apiVersionParameter = operation?.Parameters?.FirstOrDefault(x => x.Name == "api-version");
             if (apiVersionParameter == null)
