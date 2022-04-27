@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GithubActions.Contract;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Some.Contracts;
 
 namespace GithubActions.Web.Server.Controllers
 {

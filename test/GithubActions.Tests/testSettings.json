@@ -1,0 +1,18 @@
+{
+  "NOTE": "Use secrets.json when running tests locally (i.e. on your machine). Replace this entire file when running as part of CI-CD.",
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Debug",
+      "Microsoft": "Debug"
+    }
+  },
+  "TestSettings": {
+    "TargetLocalHost": "true",
+    "BaseUrl": "https://localhost"
+  },
+  "WeatherConfig": {
+    "Values": [ "Red", "Blue" ]
+  }
+}
