@@ -105,10 +105,7 @@ jobs:
           dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithDotNetCore" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
       # --- ^^^ SonarQube Stuff ^^^ ---
 
-      - name: Build
-        run: dotnet build --no-restore --configuration release
-
-      - name: Test & collect Code Coverage
+      - name: Build, Test & collect Code Coverage
         run: ./scripts/dotnet-test/dotnet-test.sh
 
       # --- vvv SonarQube Stuff vvv---

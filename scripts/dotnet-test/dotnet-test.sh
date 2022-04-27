@@ -1,6 +1,7 @@
 #!/bin/bash
+dotnet build --no-restore --configuration release
+
 dotnet test \
---no-build \
 -l "trx;verbosity=detailed;logfilename=TestResults.trx" \
 -l "console;verbosity=detailed" \
 -l "html;verbosity=detailed;logfilename=TestResults.html" \
