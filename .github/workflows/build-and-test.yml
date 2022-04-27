@@ -39,7 +39,7 @@ jobs:
           NUGET_AUTH_TOKEN: ${{ secrets.ORGANISATION_PAT }}
 
       - name: SCA scan job
-        run: sudo ./scripts/dotnet-sca/dotnet-sca.sh
+        run: ./scripts/dotnet-sca/dotnet-sca.sh
 
   build-and-test:
     needs: [ dotnet-sca ]
