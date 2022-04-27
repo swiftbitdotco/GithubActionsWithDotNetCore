@@ -6,14 +6,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using GithubActions.Contract;
+using GithubActions.Web.Server.Filters;
 using GithubActions.Web.Server.StartupCsExtensions.ApiVersioning;
+using GithubActions.Web.Server.StartupCsExtensions.BindingOptionsFromAppSettingsJson;
 using GithubActions.Web.Server.StartupCsExtensions.ErrorHandling.Middleware;
 using GithubActions.Web.Server.StartupCsExtensions.SwaggerCustomization;
+using GithubActions.Web.Server.v2.Application.DependencyInjection;
+using GithubActions.Web.Server.v2.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Some.Contracts;
 
 namespace GithubActions.Web.Server
 {
@@ -36,6 +40,8 @@ namespace GithubActions.Web.Server
             // Add the IConfiguration here so that it is available for the extension methods that use services.ConfigureAndBindFromAppSettingsJson<T>()
             services.AddSingleton(Configuration);
 
+            services.ConfigureAndBindFromAppSettingsJson<WeatherConfig>();
+
             services.SetupApiVersioning();
 
             services.SetupSwagger();
@@ -47,6 +53,9 @@ namespace GithubActions.Web.Server
                     new ProducesResponseTypeAttribute(typeof(InternalServerErrorResponse),
                         StatusCodes.Status500InternalServerError));
 
+                // add a global filter for returning HTTP 400 responses for invalid ModelStates
+                options.Filters.Add(new ModelStateValidationFilterAttribute());
+
                 // always respect the browser ACCEPT headers
                 options.RespectBrowserAcceptHeader = true;
 
@@ -56,6 +65,8 @@ namespace GithubActions.Web.Server
                         "application/json",
                         "multipart/form-data"));
             }).AddControllersAsServices();
+
+            services.AddApplicationV2();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

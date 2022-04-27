@@ -1,41 +1,105 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
-using GithubActions.Contract;
-using GithubActions.Contract.v1;
-using GithubActions.Shared.Extensions;
-using GithubActions.Shared.Logging;
 
 namespace GithubActions.Shared.Clients
 {
-    public interface IApiClient
+    public class ApiClient
     {
-        Task<WeatherForecastResponse> GetAsync(string city);
-    }
-
-    public class ApiClient : IApiClient
-    {
-        public const string Name = "API";
-        private readonly ISimpleLogger _logger;
-        private readonly ICustomHttpClient _client;
-
-        public ApiClient(ISimpleLogger logger, IHttpClientFactory httpClientFactory, ICustomHttpClientFactory factory)
+        public ApiClient(IHttpClientWrapper httpClientWrapper)
         {
-            _logger = logger;
+            var baseUrl = string.Empty;
 
-            var httpClient = httpClientFactory.CreateClient(Name);
-            _client = factory.CreateClient(httpClient);
-
-            Urls = new Urls(_client.BaseAddress, 1);
+            Swagger = new Swagger(httpClientWrapper, baseUrl);
+            V1 = new V1Client(httpClientWrapper, baseUrl);
+            V2 = new V2Client(httpClientWrapper, baseUrl);
         }
 
-        public Urls Urls { get; }
+        public Swagger Swagger { get; set; }
+        public V1Client V1 { get; set; }
+        public V2Client V2 { get; set; }
+    }
 
-        public async Task<WeatherForecastResponse> GetAsync(string city)
+    public class Swagger
+    {
+        private readonly IHttpClientWrapper _httpClientWrapper;
+        private readonly string _baseUrl;
+
+        public Swagger(IHttpClientWrapper httpClientWrapper, string baseUrl)
         {
-            var uri = Urls.WeatherForecast.Get(city);
-            var httpResponse = await _client.GetAsync(uri);
-            _logger.Info($"Response from HTTP GET '{uri}': '{httpResponse.StatusCode}'");
-            return await httpResponse.GetContentAsAsync<WeatherForecastResponse>();
+            _httpClientWrapper = httpClientWrapper;
+            _baseUrl = string.Join('/', baseUrl, "swagger");
+        }
+
+        public async Task<HttpResponseMessage> GetJsonAsync(string version = "v1")
+        {
+            var url = string.Join('/', _baseUrl, version, "swagger.json");
+            return await _httpClientWrapper.GetAsync($"{url}");
+        }
+
+        public async Task<HttpResponseMessage> GetUiAsync()
+        {
+            var url = string.Join('/', _baseUrl, "index.html");
+            return await _httpClientWrapper.GetAsync($"{url}");
+        }
+    }
+
+    public class V1Client
+    {
+        public V1Client(IHttpClientWrapper httpClientWrapper, string baseUrl)
+        {
+            var v2BaseUrl = string.Join('/', baseUrl, "v1");
+
+            WeatherForeCast = new V1WeatherForeCast(httpClientWrapper, v2BaseUrl);
+        }
+
+        public V1WeatherForeCast WeatherForeCast { get; set; }
+    }
+
+    public class V1WeatherForeCast
+    {
+        private readonly IHttpClientWrapper _httpClientWrapper;
+        private readonly string _baseUrl;
+
+        public V1WeatherForeCast(IHttpClientWrapper httpClientWrapper, string baseUrl)
+        {
+            _httpClientWrapper = httpClientWrapper;
+            _baseUrl = string.Join('/', baseUrl, "WeatherForeCast");
+        }
+
+        public async Task<HttpResponseMessage> GetAsync(string city)
+        {
+            var url = string.Join('/', _baseUrl);
+            return await _httpClientWrapper.GetAsync($"{url}?city={city}");
+        }
+    }
+
+    public class V2Client
+    {
+        public V2Client(IHttpClientWrapper httpClientWrapper, string baseUrl)
+        {
+            var v2BaseUrl = string.Join('/', baseUrl, "v2");
+
+            WeatherForeCast = new V2WeatherForeCast(httpClientWrapper, v2BaseUrl);
+        }
+
+        public V2WeatherForeCast WeatherForeCast { get; set; }
+    }
+
+    public class V2WeatherForeCast
+    {
+        private readonly IHttpClientWrapper _httpClientWrapper;
+        private readonly string _baseUrl;
+
+        public V2WeatherForeCast(IHttpClientWrapper httpClientWrapper, string baseUrl)
+        {
+            _httpClientWrapper = httpClientWrapper;
+            _baseUrl = string.Join('/', baseUrl, "WeatherForeCast");
+        }
+
+        public async Task<HttpResponseMessage> GetAsync(string city)
+        {
+            var url = string.Join('/', _baseUrl);
+            return await _httpClientWrapper.GetAsync($"{url}?city={city}");
         }
     }
 }

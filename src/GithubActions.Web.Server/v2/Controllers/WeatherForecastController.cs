@@ -1,0 +1,79 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using GithubActions.Contract.v1;
+using GithubActions.Web.Server.Controllers;
+using GithubActions.Web.Server.v2.Application;
+using GithubActions.Web.Server.v2.Configuration;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace GithubActions.Web.Server.v2.Controllers
+{
+    public class WeatherForecastController : ApiControllerBase
+    {
+        private static readonly string[] Cities = new[]
+        {
+            "london", "paris"
+        };
+
+        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ISomeService _someService;
+
+        public WeatherForecastController(
+            ILogger<WeatherForecastController> logger,
+            ISomeService someService)
+        {
+            _logger = logger;
+            _someService = someService;
+        }
+
+        /// <summary>
+        /// Get the weather for a city (Only London & Paris are supported)
+        /// </summary>
+        /// <param name="city"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(WeatherForecastResponse), (int)HttpStatusCode.OK)]
+        public ActionResult<IEnumerable<WeatherForecast>> Get(string city)
+        {
+            _logger.LogInformation($"--> {nameof(Get)}");
+            if (string.IsNullOrWhiteSpace(city))
+            {
+                _logger.LogInformation($"<-- {nameof(Get)} (HTTP 400)");
+                return BadRequest(new ErrorResponse
+                {
+                    Message = $"City '{city}' is null/whitespace"
+                });
+            }
+            if (!Cities.Contains(city.ToLower()))
+            {
+                _logger.LogInformation($"<-- {nameof(Get)} (HTTP 404)");
+                return NotFound(new ErrorResponse
+                {
+                    Message = $"City '{city}' not found"
+                });
+            }
+
+            var rng = new Random();
+            var summaries = _someService.GetSummaries();
+            var retList = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = summaries[rng.Next(summaries.Count)]
+            })
+            .ToArray();
+
+            _logger.LogInformation($"<-- {nameof(Get)} (HTTP 200)");
+            return Ok(new WeatherForecastResponse
+            {
+                City = city,
+                WeatherForecasts = retList
+            });
+        }
+    }
+}

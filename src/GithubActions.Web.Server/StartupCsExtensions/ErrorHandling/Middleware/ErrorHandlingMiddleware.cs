@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using GithubActions.Contract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Some.Contracts;
 
 namespace GithubActions.Web.Server.StartupCsExtensions.ErrorHandling.Middleware
 {
@@ -61,9 +61,8 @@ namespace GithubActions.Web.Server.StartupCsExtensions.ErrorHandling.Middleware
                 Exception = ex.ToString()
             };
 
-            var contentType = context.Request.ContentType ?? string.Empty;
-
             var responseStringContent = JsonConvert.SerializeObject(response);
+            context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(responseStringContent);
         }
     }

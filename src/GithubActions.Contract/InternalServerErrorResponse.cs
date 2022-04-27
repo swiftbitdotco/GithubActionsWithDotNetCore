@@ -1,4 +1,4 @@
-﻿namespace Some.Contracts
+﻿namespace GithubActions.Contract
 {
     public class InternalServerErrorResponse
     {
