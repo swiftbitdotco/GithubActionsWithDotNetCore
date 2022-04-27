@@ -26,7 +26,7 @@ env:
 
 jobs:
   dotnet-sca:
-    if: env.IS_DEPENDABOT == false
+    if: ${{ env.IS_DEPENDABOT == false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -184,7 +184,7 @@ jobs:
       # https://github.com/irongut/CodeCoverageSummary
       - name: Create Code Coverage Summary Report for Coverage PR Comment
         uses: irongut/CodeCoverageSummary@v1.2.0
-        if: github.event_name == 'pull_request'
+        if: ${{ env.IS_PR }}
         with:
           filename: CodeCoverage/Cobertura.xml
           badge: true
@@ -196,7 +196,7 @@ jobs:
 
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event_name == 'pull_request'
+        if: ${{ env.IS_PR }}
         with:
           recreate: true
           path: code-coverage-results.md
@@ -217,7 +217,7 @@ jobs:
       
       # NOTE: see https://github.com/Schneegans/dynamic-badges-action/#configuration for how this works
       - name: Create Code Coverage Badge into gist
-        if: env.IS_MAIN_BRANCH
+        if: ${{ env.IS_MAIN_BRANCH }}
         uses: schneegans/dynamic-badges-action@v1.3.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
