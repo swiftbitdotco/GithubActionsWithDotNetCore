@@ -109,14 +109,7 @@ jobs:
         run: dotnet build --no-restore --configuration release
 
       - name: Test & collect Code Coverage
-        run: >-
-          dotnet test 
-          --no-build
-          -l "trx;verbosity=detailed;logfilename=TestResults.trx" 
-          -l "console;verbosity=detailed" 
-          -l "html;verbosity=detailed;logfilename=TestResults.html" 
-          --results-directory="TestResults" 
-          --collect="XPlat Code Coverage"
+        run: ./scripts/dotnet-test/dotnet-test.sh
 
       # --- vvv SonarQube Stuff vvv---
       - name: Stop SonarQube
