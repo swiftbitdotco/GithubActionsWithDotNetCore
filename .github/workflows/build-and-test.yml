@@ -26,7 +26,6 @@ env:
 
 jobs:
   dotnet-sca:
-    if: ${{ env.IS_DEPENDABOT == false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
