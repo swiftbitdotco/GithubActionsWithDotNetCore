@@ -175,6 +175,7 @@ jobs:
           path: code-coverage-results.md
 
       - name: Get code coverage from xml (via pwsh)
+        id: coverage
         shell: pwsh
         run: |
           $XMLPath ="./CodeCoverage/Cobertura.xml";
