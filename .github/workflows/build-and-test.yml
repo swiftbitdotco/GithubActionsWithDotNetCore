@@ -39,7 +39,7 @@ jobs:
           NUGET_AUTH_TOKEN: ${{ secrets.ORGANISATION_PAT }}
 
       - name: SCA scan job
-        run: sudo ./scripts/dotnet-sca/dotnet-sca.sh
+        run: ./scripts/dotnet-sca/dotnet-sca.sh
 
   build-and-test:
     needs: [ dotnet-sca ]
@@ -105,18 +105,8 @@ jobs:
           dotnet-sonarscanner begin /k:"swiftbitdotco_GithubActionsWithDotNetCore" /o:"swiftbitdotco" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
       # --- ^^^ SonarQube Stuff ^^^ ---
 
-      - name: Build
-        run: dotnet build --no-restore --configuration release
-
-      - name: Test & collect Code Coverage
-        run: >-
-          dotnet test 
-          --no-build
-          -l "trx;verbosity=detailed;logfilename=TestResults.trx" 
-          -l "console;verbosity=detailed" 
-          -l "html;verbosity=detailed;logfilename=TestResults.html" 
-          --results-directory="TestResults" 
-          --collect="XPlat Code Coverage"
+      - name: Build, Test & collect Code Coverage
+        run: ./scripts/dotnet-test/dotnet-test.sh
 
       # --- vvv SonarQube Stuff vvv---
       - name: Stop SonarQube
