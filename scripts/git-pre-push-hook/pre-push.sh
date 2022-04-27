@@ -10,32 +10,10 @@ NC='\033[0m' # No Color
 DOTNET_CLI_TELEMETRY_OPTOUT=1
 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 
-# ------------------------------------------------------------
-# dotnet list package --vulnerable --include-transitive
-# ------------------------------------------------------------
-dotnet restore # required first
-
-dotnet list package --vulnerable --include-transitive | tee results.log
-
-GREP_VULN=`grep -c 'has the following vulnerable packages' results.log`
-GREP_CRIT=`grep -c 'Critical' results.log`
-GREP_HIGH=`grep -c 'High' results.log`
-
-if [[ "$GREP_VULN" != "0" ]]
-then
-  if [ "$GREP_CRIT" == "0" -a "$GREP_HIGH" == "0" ]
-  then
-    echo "### Vulnerable packages found - not high or critical ###"
-  fi
-  
-  if [ "$GREP_CRIT" == "1" -a "$GREP_HIGH" == "1" ]
-  then
-    echo "### High/critical vulnerable packages found ###"
-	exit 1
-  fi  
-fi
-
-echo "### No vulnerable packages found ###"
+# ------------------------------
+# dotnet sca
+# ------------------------------
+./scripts/dotnet-sca/dotnet-sca.sh
 
 # ------------------------------
 # build the project
